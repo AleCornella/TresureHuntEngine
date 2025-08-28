@@ -3,8 +3,23 @@ from pymongo import MongoClient
 from datetime import datetime
 
 # Connect to MongoDB (update the URI with your MongoDB URL)
-client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/TreasureHuntDB?retryWrites=true&w=majority")
-db = client["TreasureHuntDB"]  # Database name
+# add db link (nice try github scraper)
+db = client["TreasureHuntDB"]  # Database namet
+
+secretToStation = {
+    "station1": "apple-mango-QF",
+    "station2": "banana-pear-ZX",
+    "station3": "cherry-lemon-KJ",
+    "station4": "grape-peach-MN",
+    "station5": "melon-apple-RT",
+    "station6": "peach-banana-LD",
+    "station7": "orange-mango-WQ",
+    "station8": "lemon-cherry-PV",
+    "station9": "mango-pear-KT",
+    "station10": "apple-grape-HS",
+    "station11": "coral-bike-LS",
+    "station12": "mine-river-TP",
+}
 
 app = Flask(__name__)
 
@@ -18,42 +33,164 @@ def add_csp_header(response):
 def home():
     return jsonify({"message": "Welcome to the Flask API!"})
 
+
+@app.route("/leaderboard", methods=["GET"])
+def leanderboard():
+    leaderboard = {}
+    stations = db.list_collection_names()
+
+    for station in stations:
+        collection = db[station]
+        entries = list(collection.find({}).sort("timestamp", 1))
+        num_teams = len(entries)
+        if num_teams == 0:
+            continue
+        bonus_points = round(400 / num_teams)
+        for idx, entry in enumerate(entries):
+            team = entry["team"]
+            if team not in leaderboard:
+                leaderboard[team] = 0
+            leaderboard[team] += 10  # base points
+            if idx == 0:
+                leaderboard[team] += bonus_points * 2  # first team gets double bonus
+            else:
+                leaderboard[team] += bonus_points
+
+    # Sort the leaderboard by points in descending order
+    sorted_leaderboard = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
+
+    # Generate HTML content for the leaderboard
+    html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Leaderboard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            table {
+                border-collapse: collapse;
+                width: 80%;
+                max-width: 600px;
+                margin: 20px auto;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            th, td {
+                padding: 15px;
+                text-align: left;
+            }
+            th {
+                background-color: #007BFF;
+                color: white;
+                text-transform: uppercase;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            tr:hover {
+                background-color: #ddd;
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>Leaderboard</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+
+    # Add rows to the leaderboard table
+    for rank, (team, points) in enumerate(sorted_leaderboard, start=1):
+        html += f"""
+                    <tr>
+                        <td>{rank}</td>
+                        <td>{team}</td>
+                        <td>{points}</td>
+                    </tr>
+        """
+
+    # Close the HTML content
+    html += """
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+    """
+
+    return html
+
 # Define a route for POST requests
 @app.route("/post", methods=["POST"])
 def handle_post():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No JSON data provided"}), 400
+    # data = request.get_json()
+    # if not data:
+    #     return jsonify({"error": "No JSON data provided"}), 400
 
-    # Validate the expected keys
-    if "station" not in data or "team" not in data:
-        return jsonify({"error": "Invalid JSON payload. 'station' and 'team' are required."}), 400
+    # # Validate the expected keys
+    # if "station" not in data or "team" not in data:
+    #     return jsonify({"error": "Invalid JSON payload. 'station' and 'team' are required."}), 400
 
-    # Process the data
-    station = data["station"]
-    team = data["team"]
+    # # Process the data
+    # station = data["station"]
+    # team = data["team"]
 
     return jsonify({
-        "message": "POST request received!",
-        "station": station,
-        "team": team
+        "message": "You won all the code is on github (TresureHuntEngine) hack it to win to Lapponia voyage!",
     }), 200
 
 # Define a route for GET requests with dynamic stationid and teamid
-@app.route("/<int:stationid>/<int:teamid>", methods=["GET"])
+@app.route("/<stationid>/<teamid>", methods=["GET"])
 def handle_get_station_team(stationid, teamid):
-    # Save the stationid and teamid in Python variables
-    station = stationid
-    team = teamid
-
+    # Save the stationid and teamid in Python variables (already strings)
+    try:
+        station = secretToStation[stationid]
+        team = teamid
+    except KeyError:
+        return jsonify({"error": "Invalid station ID"}), 400
     # Get or create the collection for the station
     collection = db[station]
+    print(collection.index_information())
+    if (len(collection.index_information())==1):
+        collection.create_index("team", unique=True)
 
     # Insert the team ID and timestamp into the collection
-    collection.insert_one({
+    try:
+        collection.insert_one({
+            "team": team,
+            "timestamp": datetime.now()
+        })
+    except Exception as e:
+        return jsonify({
+        "message": "Error: Possibly duplicate team entry.",
+        "station": station,
         "team": team,
-        "timestamp": datetime.utcnow()
-    })
+        "errorMessage": str(e)
+    }), 200
 
     # Return the extracted values
     return jsonify({

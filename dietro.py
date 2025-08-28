@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify, make_response
 from pymongo import MongoClient
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the MongoDB URI from the environment variables
+mongo_uri = os.getenv("MONGO_URI")
 # Connect to MongoDB (update the URI with your MongoDB URL)
-# add db link (nice try github scraper)
+client = MongoClient(mongo_uri)
 db = client["TreasureHuntDB"]  # Database namet
 
 secretToStation = {

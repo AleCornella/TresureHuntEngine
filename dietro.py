@@ -212,4 +212,4 @@ def not_found(error):
     return jsonify({"error": "404 Not Found"}), 404
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=80, debug=False)

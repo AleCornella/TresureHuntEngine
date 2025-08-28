@@ -14,18 +14,18 @@ client = MongoClient(mongo_uri)
 db = client["TreasureHuntDB"]  # Database namet
 
 secretToStation = {
-    "station1": "apple-mango-QF",
-    "station2": "banana-pear-ZX",
-    "station3": "cherry-lemon-KJ",
-    "station4": "grape-peach-MN",
-    "station5": "melon-apple-RT",
-    "station6": "peach-banana-LD",
-    "station7": "orange-mango-WQ",
-    "station8": "lemon-cherry-PV",
-    "station9": "mango-pear-KT",
-    "station10": "apple-grape-HS",
-    "station11": "coral-bike-LS",
-    "station12": "mine-river-TP",
+    "apple-mango-QF":"station1",
+    "banana-pear-ZX": "station2",
+    "cherry-lemon-KJ":"station3",
+    "grape-peach-MN":"station4",
+    "melon-apple-RT":"station5",
+    "peach-banana-LD":"station6",
+    "orange-mango-WQ":"station7",
+    "lemon-cherry-PV":"station8",
+    "mango-pear-KT":"station9",
+    "apple-grape-HS":"station10",
+    "coral-bike-LS":"station11",
+    "mine-river-TP":"station12",
 }
 
 app = Flask(__name__)

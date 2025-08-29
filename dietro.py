@@ -31,7 +31,8 @@ db = client["TreasureHuntDB"]  # Database namet
 
 # Create a list of strings
 
-allowedStations = [f"station{i}" range(1,13)] + [Teo] + [f"TestStation{i}" range(1,8)]
+allowedStations = [f"station{i}" range(1,13)] + [Teo]
+allowedTeams = [f"station{i}" range(1,50)]
 
 app = Flask(__name__)
 CORS(app)
@@ -182,11 +183,11 @@ def handle_post():
 @app.route("/<stationid>/<teamid>", methods=["GET"])
 def handle_get_station_team(stationid, teamid):
     # Save the stationid and teamid in Python variables (already strings)
-    if stationid in allowedStations:
+    if stationid in allowedStations and teamid in allowedTeams:
         station = stationid
         team = teamid
     else:
-        return jsonify({"error": "Invalid station ID"}), 400
+        return jsonify({"error": "Invalid station or team ID"}), 400
     # Get or create the collection for the station
     collection = db[station]
     print(collection.index_information())

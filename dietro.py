@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime
 from dotenv import load_dotenv
@@ -13,22 +14,23 @@ mongo_uri = os.getenv("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client["TreasureHuntDB"]  # Database namet
 
-secretToStation = {
-    "apple-mango-QF":"station1",
-    "banana-pear-ZX": "station2",
-    "cherry-lemon-KJ":"station3",
-    "grape-peach-MN":"station4",
-    "melon-apple-RT":"station5",
-    "peach-banana-LD":"station6",
-    "orange-mango-WQ":"station7",
-    "lemon-cherry-PV":"station8",
-    "mango-pear-KT":"station9",
-    "apple-grape-HS":"station10",
-    "coral-bike-LS":"station11",
-    "mine-river-TP":"station12",
+#secretToStation = {
+#    "apple-mango-QF":"station1",
+#    "banana-pear-ZX": "station2",
+#    "cherry-lemon-KJ":"station3",
+#    "grape-peach-MN":"station4",
+#    "melon-apple-RT":"station5",
+#    "peach-banana-LD":"station6",
+#   "orange-mango-WQ":"station7",
+#    "lemon-cherry-PV":"station8",
+#    "mango-pear-KT":"station9",
+#    "apple-grape-HS":"station10",
+#    "coral-bike-LS":"station11",
+#    "mine-river-TP":"station12",
 }
 
 app = Flask(__name__)
+CORS(app)
 
 @app.after_request
 def add_csp_header(response):
@@ -175,7 +177,8 @@ def handle_post():
 def handle_get_station_team(stationid, teamid):
     # Save the stationid and teamid in Python variables (already strings)
     try:
-        station = secretToStation[stationid]
+        #station = secretToStation[stationid]
+        station = stationid
         team = teamid
     except KeyError:
         return jsonify({"error": "Invalid station ID"}), 400

@@ -27,7 +27,7 @@ db = client["TreasureHuntDB"]  # Database namet
 #    "apple-grape-HS":"station10",
 #    "coral-bike-LS":"station11",
 #    "mine-river-TP":"station12",
-}
+#}
 
 app = Flask(__name__)
 CORS(app)

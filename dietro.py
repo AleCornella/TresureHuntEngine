@@ -14,20 +14,25 @@ mongo_uri = os.getenv("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client["TreasureHuntDB"]  # Database namet
 
-#secretToStation = {
-#    "apple-mango-QF":"station1",
-#    "banana-pear-ZX": "station2",
-#    "cherry-lemon-KJ":"station3",
-#    "grape-peach-MN":"station4",
-#    "melon-apple-RT":"station5",
-#    "peach-banana-LD":"station6",
-#   "orange-mango-WQ":"station7",
-#    "lemon-cherry-PV":"station8",
-#    "mango-pear-KT":"station9",
-#    "apple-grape-HS":"station10",
-#    "coral-bike-LS":"station11",
-#    "mine-river-TP":"station12",
-#}
+# secretToStation = {
+#     "apple-mango-QF":"station1",
+#     "banana-pear-ZX": "station2",
+#     "cherry-lemon-KJ":"station3",
+#     "grape-peach-MN":"station4",
+#     "melon-apple-RT":"station5",
+#     "peach-banana-LD":"station6",
+#    "orange-mango-WQ":"station7",
+#     "lemon-cherry-PV":"station8",
+#     "mango-pear-KT":"station9",
+#     "apple-grape-HS":"station10",
+#     "coral-bike-LS":"station11",
+#     "mine-river-TP":"station12",
+# }
+
+# Create a list of strings
+
+allowedStations = [f"station{i}" range(1,13)] + [Teo]
+allowedTeams = [f"station{i}" range(1,50)]
 
 app = Flask(__name__)
 CORS(app)
@@ -178,12 +183,11 @@ def handle_post():
 @app.route("/<stationid>/<teamid>", methods=["GET"])
 def handle_get_station_team(stationid, teamid):
     # Save the stationid and teamid in Python variables (already strings)
-    try:
-        #station = secretToStation[stationid]
+    if stationid in allowedStations and teamid in allowedTeams:
         station = stationid
         team = teamid
-    except KeyError:
-        return jsonify({"error": "Invalid station ID"}), 400
+    else:
+        return jsonify({"error": "Invalid station or team ID"}), 400
     # Get or create the collection for the station
     collection = db[station]
     print(collection.index_information())

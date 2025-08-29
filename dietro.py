@@ -27,7 +27,7 @@ db = client["TreasureHuntDB"]  # Database namet
 #    "apple-grape-HS":"station10",
 #    "coral-bike-LS":"station11",
 #    "mine-river-TP":"station12",
-}
+#}
 
 app = Flask(__name__)
 CORS(app)
@@ -40,7 +40,9 @@ def add_csp_header(response):
 # Define a route for GET requests
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"message": "Welcome to the Flask API!"})
+    #return jsonify({"message": "Welcome to the Flask API!"})
+    # Redirect to scanner
+    return redirect("https://scannerfuuun.vercel.app", code=302)  # 302 = temporary redirect
 
 
 @app.route("/leaderboard", methods=["GET"])

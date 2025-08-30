@@ -31,8 +31,11 @@ db = client["TreasureHuntDB"]  # Database namet
 
 # Create a list of strings
 
-allowedStations = [f"station{i}" for i in range(1,8)] + ["Teo"]
-allowedTeams = [f"team{i}" for i in range(1,50)]
+#allowedStations = [f"station{i}" for i in range(1,8)] + ["Teo"]
+#allowedTeams = [f"team{i}" for i in range(1,50)]
+allowedStations = []
+allowedTeams = []
+
 
 app = Flask(__name__)
 CORS(app)

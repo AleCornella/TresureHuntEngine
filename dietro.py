@@ -31,8 +31,11 @@ db = client["TreasureHuntDB"]  # Database namet
 
 # Create a list of strings
 
-allowedStations = [f"station{i}" range(1,13)] + [Teo]
-allowedTeams = [f"station{i}" range(1,50)]
+#allowedStations = [f"station{i}" for i in range(1,8)] + ["Teo"]
+#allowedTeams = [f"team{i}" for i in range(1,50)]
+allowedStations = []
+allowedTeams = []
+
 
 app = Flask(__name__)
 CORS(app)
@@ -61,17 +64,22 @@ def leanderboard():
         num_teams = len(entries)
         if num_teams == 0:
             continue
-        bonus_points = round(400 / num_teams)
+        
+        bonus_points = round(120 / num_teams)
+        
         for idx, entry in enumerate(entries):
             team = entry["team"]
             if team not in leaderboard:
                 leaderboard[team] = 0
-            leaderboard[team] += 10  # base points
+            
+            # punti per questa stazione
+            station_points = 20 + bonus_points
+            
+            # se è il primo → +25%
             if idx == 0:
-                leaderboard[team] += bonus_points * 2  # first team gets double bonus
-            else:
-                leaderboard[team] += bonus_points
-
+                station_points *= 1.25
+            
+            leaderboard[team] += station_points
     # Sort the leaderboard by points in descending order
     sorted_leaderboard = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
 
